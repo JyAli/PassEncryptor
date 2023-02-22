@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import 'Utils.dart';
 // ignore_for_file: prefer_const_constructors
 
 final Color primary = Color.fromARGB(255, 230, 230, 230);
@@ -41,36 +43,13 @@ class Home extends StatelessWidget {
   }
 }
 
-class utils {
-  static String encrypt(String input, int shift) {
-    input = input.trim().toLowerCase();
-    String output = "";
-
-    for (var charInt in input.runes) {
-      charInt += shift;
-      if (charInt > 122) {
-        charInt -= 26;
-      } else if (charInt < 97) {
-        charInt += 26;
-      }
-
-      String character = String.fromCharCode(charInt);
-      if (output.length == input.length - 1) {
-        character = character.toUpperCase();
-      }
-      output = character + output;
-    }
-    return output;
-  }
-}
-
 class InputBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: inputController,
       onChanged: (input) {
-        outputController.text = utils.encrypt(input, 1);
+        outputController.text = Utils.encrypt(input, 1);
       },
       decoration: InputDecoration(
         border: OutlineInputBorder(
