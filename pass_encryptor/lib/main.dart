@@ -7,6 +7,8 @@ import 'Utils.dart';
 final Color primary = Color.fromARGB(255, 230, 230, 230);
 final TextEditingController inputController = TextEditingController();
 final TextEditingController outputController = TextEditingController();
+final TextEditingController shiftController = TextEditingController();
+int shift = 0;
 
 void main() {
   runApp(MaterialApp(
@@ -18,6 +20,7 @@ void main() {
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    setupShift();
     return Scaffold(
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -35,11 +38,85 @@ class Home extends StatelessWidget {
               width: MediaQuery.of(context).size.width * 0.8,
               child: OutputBox(),
             ),
-            CopyButton(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Spacer(),
+                CopyButton(),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(
+                        MediaQuery.of(context).size.width * 0.12, 0, 0, 0),
+                    child: IconButton(
+                      onPressed: () {
+                        openDialog(context);
+                      },
+                      icon: Icon(Icons.settings),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> setupShift() async {
+    try {
+      String value = await Utils.readFromFile("shift.txt");
+      shift = int.parse(value);
+    } catch (e) {}
+  }
+
+  void openDialog(var context) {
+    shiftController.text = "";
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Shift"),
+        content: TextField(
+          controller: shiftController,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderSide: BorderSide(color: primary),
+            ),
+            labelText: 'New Shift Amount',
+            prefixIcon: Icon(
+              Icons.text_rotation_none,
+              color: primary,
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () {
+                cancelShift(context);
+              },
+              child: Text("Cancel")),
+          TextButton(
+              onPressed: () {
+                submitShift(context);
+              },
+              child: Text("Save")),
+        ],
+      ),
+    );
+  }
+
+  Future<void> submitShift(var context) async {
+    Navigator.of(context).pop();
+    if (shiftController.text.isNotEmpty) {
+      shift = int.parse(shiftController.text);
+      outputController.text = Utils.encrypt(inputController.text, shift);
+      Utils.saveToFile(shiftController.text, "shift.txt");
+    }
+  }
+
+  void cancelShift(var context) {
+    Navigator.of(context).pop();
   }
 }
 
@@ -49,7 +126,7 @@ class InputBox extends StatelessWidget {
     return TextField(
       controller: inputController,
       onChanged: (input) {
-        outputController.text = Utils.encrypt(input, 1);
+        if (shift != 0) outputController.text = Utils.encrypt(input, shift);
       },
       decoration: InputDecoration(
         border: OutlineInputBorder(
