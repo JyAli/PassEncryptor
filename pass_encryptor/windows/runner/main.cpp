@@ -25,8 +25,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   project.set_dart_entrypoint_arguments(std::move(command_line_arguments));
 
   FlutterWindow window(project);
-  Win32Window::Point origin(10, 10);
-  Win32Window::Size size(1280, 720);
+  Win32Window::Size size(350, 280);
+  int monitor_width = GetSystemMetrics(SM_CXSCREEN);
+  int monitor_hight = GetSystemMetrics(SM_CYSCREEN);
+  int new_x_position = (int)(monitor_width - 2.4*size.width)/2;
+  int new_y_position = (int)(monitor_hight - 2*size.height)/2;
+  Win32Window::Point origin(new_x_position, new_y_position);
+
   if (!window.Create(L"pass_encryptor", origin, size)) {
     return EXIT_FAILURE;
   }
