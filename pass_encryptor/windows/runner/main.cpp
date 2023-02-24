@@ -32,7 +32,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   int new_y_position = (int)(monitor_hight - 2*size.height)/2;
   Win32Window::Point origin(new_x_position, new_y_position);
 
-  if (!window.Create(L"pass_encryptor", origin, size)) {
+  if (!window.Create(L"Pass Encryptor", origin, size)) {
     return EXIT_FAILURE;
   }
   window.SetQuitOnClose(true);
