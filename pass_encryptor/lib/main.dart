@@ -138,6 +138,7 @@ class InputBox extends StatelessWidget {
           color: primary,
         ),
       ),
+      autofocus: true,
     );
   }
 }
